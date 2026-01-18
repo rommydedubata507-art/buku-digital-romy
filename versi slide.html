@@ -1,0 +1,3653 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide Presentasi Interaktif - Buku Ajar Informatika Kelas VII</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --secondary: #4caf50;
+            --accent: #ff9800;
+            --success: #8bc34a;
+            --warning: #ffc107;
+            --info: #00bcd4;
+            --light: #f1f8e9;
+            --dark: #1b5e20;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --gradient: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+            height: 100vh;
+            overflow: hidden;
+            font-size: 16px;
+        }
+
+        .presentation-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Slide Container */
+        .slides-container {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 100%;
+            width: 100%;
+        }
+
+        .slide {
+            min-width: 100vw;
+            height: 100vh;
+            padding: 15px;
+            background: var(--white);
+            overflow-y: auto;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        body.dark-mode .slide {
+            background: #263238;
+            color: #eceff1;
+        }
+
+        /* Progress Bar */
+        .slide-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(0,0,0,0.1);
+            z-index: 1001;
+        }
+
+        .slide-progress-bar {
+            height: 100%;
+            background: var(--gradient);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Slide Number */
+        .slide-number {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: var(--gradient);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: var(--shadow);
+            z-index: 10;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Content Slide */
+        .slide-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 8px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow-y: auto;
+            padding-top: 35px;
+        }
+
+        .slide-title {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+            color: var(--primary);
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        body.dark-mode .slide-title {
+            color: var(--light);
+        }
+
+        .slide-subtitle {
+            font-size: 1.2rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .slide-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .highlight-text {
+            background: linear-gradient(120deg, rgba(76, 175, 80, 0.15) 0%, rgba(76, 175, 80, 0) 100%);
+            padding: 12px;
+            border-radius: 10px;
+            border-left: 3px solid var(--secondary);
+            margin: 12px 0;
+        }
+
+        /* Content Types */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .content-card {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-top: 3px solid var(--secondary);
+        }
+
+        body.dark-mode .content-card {
+            background: #37474f;
+        }
+
+        .content-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .content-card h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 1.1rem;
+        }
+
+        body.dark-mode .content-card h3 {
+            color: var(--light);
+        }
+
+        .content-card h3 i {
+            color: var(--secondary);
+        }
+
+        /* Lists */
+        .content-list {
+            list-style: none;
+            margin: 12px 0;
+        }
+
+        .content-list li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .content-list li:before {
+            content: "•";
+            position: absolute;
+            left: 12px;
+            color: var(--secondary);
+            font-size: 1.3rem;
+            line-height: 1;
+        }
+
+        .number-list {
+            counter-reset: item;
+            list-style: none;
+        }
+
+        .number-list li {
+            counter-increment: item;
+            margin-bottom: 8px;
+            padding-left: 35px;
+            position: relative;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .number-list li:before {
+            content: counter(item);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: var(--secondary);
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        /* Table Styles */
+        .slide-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+
+        .slide-table th {
+            background: var(--gradient);
+            color: white;
+            padding: 10px;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .slide-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .slide-table tr:nth-child(even) {
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .slide-table tr:hover {
+            background: rgba(76, 175, 80, 0.2);
+        }
+
+        /* Quote Box */
+        .quote-box {
+            background: linear-gradient(135deg, #81c784 0%, #66bb6a 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quote-box:before {
+            content: "❝";
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            font-size: 2.5rem;
+            opacity: 0.3;
+        }
+
+        .quote-box:after {
+            content: "❞";
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            font-size: 2.5rem;
+            opacity: 0.3;
+        }
+
+        .quote-text {
+            font-size: 1.1rem;
+            font-style: italic;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            line-height: 1.4;
+        }
+
+        /* Activity Box */
+        .activity-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            border-left: 6px solid var(--warning);
+        }
+
+        body.dark-mode .activity-box {
+            background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+        }
+
+        .activity-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        /* Important Note */
+        .important-note {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 2px solid var(--accent);
+        }
+
+        body.dark-mode .important-note {
+            background: linear-gradient(135deg, #5d4037 0%, #795548 100%);
+        }
+
+        /* Toolbar */
+        .toolbar {
+            position: fixed;
+            top: 8px;
+            left: 8px;
+            display: flex;
+            gap: 8px;
+            z-index: 1002;
+        }
+
+        .toolbar-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .toolbar-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Thumbnail Navigation */
+        .thumbnail-nav {
+            position: fixed;
+            left: -280px;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--white);
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            z-index: 1003;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        body.dark-mode .thumbnail-nav {
+            background: #263238;
+            color: var(--light);
+        }
+
+        .thumbnail-nav.active {
+            left: 0;
+        }
+
+        .thumbnail-nav h3 {
+            margin-bottom: 12px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1.1rem;
+        }
+
+        body.dark-mode .thumbnail-nav h3 {
+            color: var(--light);
+        }
+
+        .close-thumbnail {
+            cursor: pointer;
+            color: var(--accent);
+            font-size: 1.3rem;
+        }
+
+        .thumbnail-list {
+            list-style: none;
+        }
+
+        .thumbnail-item {
+            padding: 10px;
+            margin-bottom: 6px;
+            background: var(--light);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+            font-size: 0.85rem;
+        }
+
+        body.dark-mode .thumbnail-item {
+            background: #37474f;
+        }
+
+        .thumbnail-item:hover {
+            transform: translateX(6px);
+            border-left-color: var(--secondary);
+        }
+
+        .thumbnail-item.active {
+            background: var(--secondary);
+            color: white;
+            border-left-color: var(--accent);
+        }
+
+        /* Overlay for thumbnail */
+        .thumbnail-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1002;
+            display: none;
+        }
+
+        .thumbnail-overlay.active {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                font-size: 14px;
+            }
+            
+            .slide {
+                padding: 12px;
+            }
+
+            .slide-title {
+                font-size: 1.5rem;
+            }
+
+            .slide-subtitle {
+                font-size: 1rem;
+            }
+
+            .slide-text {
+                font-size: 0.9rem;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .nav-buttons {
+                bottom: 12px;
+                right: 12px;
+            }
+
+            .nav-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .slide-number {
+                top: 6px;
+                right: 12px;
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+            }
+
+            .toolbar {
+                top: 6px;
+                left: 6px;
+            }
+
+            .toolbar-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 0.85rem;
+            }
+
+            .thumbnail-nav {
+                width: 220px;
+                left: -220px;
+            }
+            
+            .slide-content {
+                padding: 4px;
+                padding-top: 30px;
+            }
+            
+            .slide-image {
+                max-height: 150px;
+            }
+        }
+
+        /* Evaluation Styles */
+        .evaluation-slide .slide-content {
+            padding-top: 10px;
+        }
+
+        .evaluation-container {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 12px 0;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        body.dark-mode .evaluation-container {
+            background: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
+        }
+
+        .question {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        body.dark-mode .question {
+            background: #37474f;
+        }
+
+        .question-number {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .options {
+            margin: 8px 0;
+        }
+
+        .option {
+            margin: 6px 0;
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        body.dark-mode .option {
+            background: #455a64;
+        }
+
+        .option:hover {
+            background: #e0e0e0;
+        }
+
+        body.dark-mode .option:hover {
+            background: #546e7a;
+        }
+
+        .option.selected {
+            background: #c8e6c9;
+            border-left: 3px solid var(--success);
+        }
+
+        body.dark-mode .option.selected {
+            background: #1b5e20;
+        }
+
+        .option.correct {
+            background: #c8e6c9;
+            border-left: 3px solid var(--success);
+        }
+
+        .option.incorrect {
+            background: #ffcdd2;
+            border-left: 3px solid #f44336;
+        }
+
+        .option input {
+            margin-right: 8px;
+        }
+
+        .fill-in-input {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin: 8px 0;
+        }
+
+        .fill-in-input.correct {
+            border-color: var(--success);
+            background: #e8f5e9;
+        }
+
+        .fill-in-input.incorrect {
+            border-color: #f44336;
+            background: #ffebee;
+        }
+
+        .evaluation-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .eval-btn {
+            padding: 10px 18px;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: var(--transition);
+            flex: 1;
+            min-width: 160px;
+        }
+
+        .eval-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .results-container {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            box-shadow: var(--shadow);
+        }
+
+        body.dark-mode .results-container {
+            background: #37474f;
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 15px 0;
+        }
+
+        .score-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 1rem;
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .feedback.excellent {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .feedback.good {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .feedback.needs-improvement {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        /* Quiz Navigation */
+        .quiz-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .quiz-btn {
+            padding: 8px 16px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .quiz-btn:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .quiz-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Compact content for more material */
+        .compact-list {
+            margin: 8px 0;
+        }
+        
+        .compact-list li {
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin: 12px 0 8px 0;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 4px;
+        }
+        
+        .material-section {
+            margin: 12px 0;
+        }
+
+        /* STYLE BARU UNTUK PETA KONSEP YANG LEBIH MENARIK */
+        .concept-map-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body.dark-mode .concept-map-container {
+            background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+        }
+
+        .concept-map {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .concept-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        body.dark-mode .concept-item {
+            background: #37474f;
+        }
+
+        .concept-item:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            border-color: var(--secondary);
+        }
+
+        .concept-item:nth-child(1) { animation-delay: 0.1s; }
+        .concept-item:nth-child(2) { animation-delay: 0.2s; }
+        .concept-item:nth-child(3) { animation-delay: 0.3s; }
+        .concept-item:nth-child(4) { animation-delay: 0.4s; }
+
+        .concept-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .concept-item h4 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+
+        body.dark-mode .concept-item h4 {
+            color: var(--light);
+        }
+
+        .concept-item p {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        body.dark-mode .concept-item p {
+            color: #ccc;
+        }
+
+        .concept-connections {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            height: 90%;
+            z-index: 1;
+            opacity: 0.3;
+        }
+
+        .connection-line {
+            position: absolute;
+            background: var(--secondary);
+            height: 2px;
+            transform-origin: 0 0;
+        }
+
+        /* STYLE UNTUK LAYOUT GAMBAR DI SAMPING TEKS */
+        .image-side-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .image-side-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .image-container-side {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-container-side img {
+            max-width: 100%;
+            max-height: 250px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: var(--shadow-lg);
+            border: 5px solid white;
+            object-fit: cover;
+        }
+
+        body.dark-mode .image-container-side img {
+            border: 5px solid #37474f;
+        }
+
+        .image-caption-side {
+            margin-top: 10px;
+            font-style: italic;
+            color: var(--dark);
+            font-size: 0.85rem;
+            text-align: center;
+            max-width: 90%;
+        }
+
+        body.dark-mode .image-caption-side {
+            color: var(--light);
+        }
+
+        .text-content-side {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        /* STYLE UNTUK LAYOUT GAMBAR DI KANAN */
+        .image-right-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            align-items: start;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .image-right-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* STYLE UNTUK LAYOUT GAMBAR DI KIRI */
+        .image-left-layout {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            align-items: start;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .image-left-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .slide-in-right {
+            animation: slideInRight 0.8s ease-out;
+        }
+
+        .slide-in-left {
+            animation: slideInLeft 0.8s ease-out;
+        }
+
+        .scale-up {
+            animation: scaleUp 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes scaleUp {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+        }
+
+        /* Print Mode */
+        @media print {
+            .toolbar,
+            .nav-buttons,
+            .slide-progress,
+            .slide-number,
+            .thumbnail-nav,
+            .thumbnail-overlay {
+                display: none !important;
+            }
+
+            .slides-container {
+                transform: none !important;
+                display: block;
+            }
+
+            .slide {
+                min-width: 100%;
+                height: auto;
+                page-break-after: always;
+                overflow: visible;
+            }
+            
+            .evaluation-container {
+                max-height: none;
+                overflow: visible;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="slide-progress">
+        <div class="slide-progress-bar" id="slideProgressBar"></div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <button class="toolbar-btn" id="themeToggle" title="Mode Gelap/Terang">
+            <i class="fas fa-moon"></i>
+        </button>
+        <button class="toolbar-btn" id="thumbToggle" title="Daftar Slide">
+            <i class="fas fa-th-list"></i>
+        </button>
+        <button class="toolbar-btn" onclick="toggleFullscreen()" title="Layar Penuh">
+            <i class="fas fa-expand"></i>
+        </button>
+        <button class="toolbar-btn" onclick="window.print()" title="Cetak">
+            <i class="fas fa-print"></i>
+        </button>
+    </div>
+
+    <!-- Thumbnail Navigation -->
+    <div class="thumbnail-overlay" id="thumbOverlay"></div>
+    <div class="thumbnail-nav" id="thumbnailNav">
+        <h3>
+            Daftar Slide
+            <span class="close-thumbnail" id="closeThumbnail">&times;</span>
+        </h3>
+        <ul class="thumbnail-list" id="thumbnailList">
+            <!-- Generated by JavaScript -->
+        </ul>
+    </div>
+
+    <!-- Main Presentation Container -->
+    <div class="presentation-container">
+        <div class="slides-container" id="slidesContainer">
+            <!-- Slide 1: Cover -->
+            <div class="slide" id="slide1">
+                <div class="slide-number">1</div>
+                <div class="slide-content">
+                    <div class="image-container-side fade-in">
+                        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                             alt="Teknologi Pendidikan" class="slide-image">
+                    </div>
+                    <h1 class="slide-title fade-in" style="animation-delay: 0.3s;">
+                        <i class="fas fa-laptop-code"></i><br>
+                        BUKU AJAR INFORMATIKA
+                    </h1>
+                    <h2 class="slide-subtitle fade-in" style="animation-delay: 0.5s;">
+                        Kelas VII SMP/MTs
+                    </h2>
+                    <div class="highlight-text fade-in" style="animation-delay: 0.7s;">
+                        <h3 style="text-align: center; margin-bottom: 12px;">Kurikulum Merdeka</h3>
+                        <p style="text-align: center; font-size: 1rem;">
+                            <i class="fas fa-graduation-cap"></i> Edisi Revisi 2024
+                        </p>
+                    </div>
+                    <div class="quote-box fade-in" style="animation-delay: 0.9s;">
+                        <p class="quote-text">
+                            "Mewujudkan pendidikan informatika yang menyenangkan, 
+                            relevan, dan bermanfaat bagi kehidupan di era digital"
+                        </p>
+                    </div>
+                    <div class="fade-in" style="animation-delay: 1.1s; text-align: center; margin-top: 15px;">
+                        <p style="font-size: 1.1rem;">
+                            <i class="fas fa-user-tie"></i><br>
+                            ROMY S DEDU BATA, S.Pd., M.Pd.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2: Daftar Isi Lengkap -->
+            <div class="slide" id="slide2">
+                <div class="slide-number">2</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-left">
+                        <i class="fas fa-list-alt"></i><br>
+                        DAFTAR ISI LENGKAP
+                    </h1>
+                    
+                    <div class="content-grid">
+                        <div class="content-card scale-up" style="animation-delay: 0.2s;">
+                            <h3><i class="fas fa-digital-tachograph"></i> BAB 1</h3>
+                            <h4>Jejak Bermedia Digital</h4>
+                            <ul class="compact-list">
+                                <li>A. Jejak Digital</li>
+                                <li>B. Media Sosial</li>
+                                <li>C. Etika Bermedia Digital</li>
+                                <li>D. Cyberbullying</li>
+                                <li>E. Uji Kompetensi</li>
+                                <li>F. Pengayaan</li>
+                                <li>G. Refleksi</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="content-card scale-up" style="animation-delay: 0.4s;">
+                            <h3><i class="fas fa-laptop"></i> BAB 2</h3>
+                            <h4>Pemanfaatan Perangkat Digital</h4>
+                            <ul class="compact-list">
+                                <li>A. Komponen Sistem Komputer</li>
+                                <li>B. Pengalamatan Memori</li>
+                                <li>C. Central Processing Unit</li>
+                                <li>D. Jaringan Komputer</li>
+                                <li>E. Komunikasi Data pada Ponsel</li>
+                                <li>F. Terhubung ke Internet dengan Aman</li>
+                                <li>G. Perangkat Lunak Aplikasi</li>
+                                <li>H. Pembuatan Laporan</li>
+                                <li>I. Merangkum Narasi Digital</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="important-note fade-in" style="animation-delay: 0.6s; margin-top: 15px;">
+                        <h3><i class="fas fa-lightbulb"></i> Petunjuk Penggunaan</h3>
+                        <p>Gunakan tombol panah, spacebar, atau klik navigasi untuk berpindah slide. Scroll untuk melihat konten lebih lengkap.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: Bab 1 - Jejak Digital Lengkap -->
+            <div class="slide" id="slide3">
+                <div class="slide-number">3</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-right">
+                        <i class="fas fa-footprints"></i><br>
+                        BAB 1: JEJAK DIGITAL
+                    </h1>
+                    
+                    <div class="image-side-layout">
+                        <div class="image-container-side slide-in-left">
+                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Jejak Digital">
+                            <p class="image-caption-side">Setiap aktivitas online meninggalkan jejak digital</p>
+                        </div>
+                        
+                        <div class="text-content-side slide-in-right">
+                            <div class="material-section">
+                                <h3 class="section-title">A. Pengertian Jejak Digital</h3>
+                                <p class="slide-text">
+                                    Jejak digital adalah data yang kita simpan dan tinggalkan setelah menggunakan internet. Contoh: mengunjungi situs web, mengirim email, posting di media sosial, riwayat pencarian, belanja online, dll.
+                                </p>
+                                
+                                <div class="content-grid">
+                                    <div class="content-card">
+                                        <h4><i class="fas fa-bullhorn"></i> Jejak Digital Aktif</h4>
+                                        <ul class="compact-list">
+                                            <li>Posting di media sosial</li>
+                                            <li>Mengunggah foto/video</li>
+                                            <li>Mengisi formulir online</li>
+                                            <li>Mengirim email</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="content-card">
+                                        <h4><i class="fas fa-eye-slash"></i> Jejak Digital Pasif</h4>
+                                        <ul class="compact-list">
+                                            <li>Cookies browser</li>
+                                            <li>Riwayat pencarian</li>
+                                            <li>Lokasi GPS</li>
+                                            <li>Log aktivitas sistem</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="material-section">
+                        <h3 class="section-title">B. Risiko Jejak Digital</h3>
+                        <ul class="number-list">
+                            <li><strong>Pencurian dan penyalahgunaan data:</strong> Data dapat disalahgunakan oleh pihak lain</li>
+                            <li><strong>Mempengaruhi reputasi digital:</strong> Membentuk citra seseorang di dunia maya</li>
+                            <li><strong>Potensi kesalahpahaman konten:</strong> Konten dapat disalahartikan atau digunakan di luar konteks</li>
+                            <li><strong>Penyebaran konten di luar sasaran:</strong> Konten pribadi dapat tersebar ke publik</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 4: Bab 1 - Cara Melindungi Jejak Digital -->
+            <div class="slide" id="slide4">
+                <div class="slide-number">4</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-left">
+                        <i class="fas fa-shield-alt"></i><br>
+                        MELINDUNGI JEJAK DIGITAL
+                    </h1>
+                    
+                    <div class="image-left-layout">
+                        <div class="image-container-side slide-in-left">
+                            <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Keamanan Digital">
+                            <p class="image-caption-side">Lindungi data pribadi Anda di dunia digital</p>
+                        </div>
+                        
+                        <div class="text-content-side slide-in-right">
+                            <div class="material-section">
+                                <h3 class="section-title">Cara-cara Melindungi Jejak Digital:</h3>
+                                <ol class="number-list">
+                                    <li>Periksa ketersediaan informasi pribadi di internet menggunakan search engine</li>
+                                    <li>Hindari berbagi secara berlebihan di media sosial</li>
+                                    <li>Hapus atau nonaktifkan akun media sosial yang jarang digunakan</li>
+                                    <li>Jangan klik tautan yang mencurigakan</li>
+                                    <li>Hindari situs web yang tidak aman (periksa https://)</li>
+                                    <li>Bangun citra diri yang positif di internet</li>
+                                    <li>Bijak sebelum menulis dan menyebarkan konten di internet</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="highlight-text">
+                        <h3><i class="fas fa-check-circle"></i> Tanda Situs Web Aman</h3>
+                        <p>• URL dimulai dengan <strong>https://</strong> (bukan http:// tanpa "s")</p>
+                        <p>• Ada ikon gembok di address bar browser</p>
+                        <p>• Sertifikat SSL valid untuk enkripsi data</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 5: Bab 1 - Media Sosial -->
+            <div class="slide" id="slide5">
+                <div class="slide-number">5</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-right">
+                        <i class="fas fa-share-alt"></i><br>
+                        MEDIA SOSIAL
+                    </h1>
+                    
+                    <div class="image-right-layout">
+                        <div class="text-content-side slide-in-left">
+                            <div class="material-section">
+                                <h3 class="section-title">B. Pengertian dan Ciri-ciri</h3>
+                                <p class="slide-text">
+                                    Media sosial adalah sarana komunikasi di internet untuk berinteraksi dan berbagi informasi. Bagian dari Web 2.0 yang memungkinkan pengguna membuat dan membagikan konten.
+                                </p>
+                                
+                                <div class="content-grid">
+                                    <div class="content-card">
+                                        <h4><i class="fas fa-check"></i> Ciri-ciri Media Sosial</h4>
+                                        <ul class="compact-list">
+                                            <li>Berbasis internet (online)</li>
+                                            <li>Bersifat interaktif</li>
+                                            <li>Pengguna dapat membuat konten</li>
+                                            <li>Memiliki akun atau profil</li>
+                                            <li>Terhubung dalam jejaring sosial</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="image-container-side slide-in-right">
+                            <img src="https://images.unsplash.com/photo-1611605698335-8b1569810432?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Media Sosial">
+                            <p class="image-caption-side">Media sosial menghubungkan orang di seluruh dunia</p>
+                        </div>
+                    </div>
+                    
+                    <div class="material-section">
+                        <h3 class="section-title">Jenis-jenis Media Sosial</h3>
+                        <table class="slide-table">
+                            <thead>
+                                <tr>
+                                    <th>Jenis</th>
+                                    <th>Contoh Platform</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Blog</td>
+                                    <td>WordPress, Blogger</td>
+                                </tr>
+                                <tr>
+                                    <td>Forum</td>
+                                    <td>PhpBB, Stack Overflow</td>
+                                </tr>
+                                <tr>
+                                    <td>Microblog</td>
+                                    <td>Twitter, Tumblr</td>
+                                </tr>
+                                <tr>
+                                    <td>Photo Sharing</td>
+                                    <td>Instagram, Flickr</td>
+                                </tr>
+                                <tr>
+                                    <td>Video Sharing</td>
+                                    <td>YouTube, TikTok</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 6: Bab 1 - Dampak Media Sosial -->
+            <div class="slide" id="slide6">
+                <div class="slide-number">6</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-left">
+                        <i class="fas fa-balance-scale"></i><br>
+                        DAMPAK MEDIA SOSIAL
+                    </h1>
+                    
+                    <div class="image-side-layout">
+                        <div class="image-container-side slide-in-left">
+                            <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Dampak Media Sosial">
+                            <p class="image-caption-side">Media sosial memiliki dampak positif dan negatif dalam kehidupan</p>
+                        </div>
+                        
+                        <div class="text-content-side slide-in-right">
+                            <div class="material-section">
+                                <h3 class="section-title">Dampak Positif Media Sosial</h3>
+                                <ul class="number-list">
+                                    <li><strong>Kedekatan sosial:</strong> Memudahkan komunikasi dan saling membantu</li>
+                                    <li><strong>Mempermudah komunikasi:</strong> Untuk bisnis, pemerintah, dan masyarakat</li>
+                                    <li><strong>Proses rekrutmen karyawan:</strong> Melihat rekam jejak calon karyawan</li>
+                                    <li><strong>Penegakan hukum:</strong> Foto pelanggaran dapat digunakan sebagai bukti</li>
+                                    <li><strong>Platform kreatif:</strong> Games, feedback, review, dan aplikasi baru</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="material-section">
+                        <h3 class="section-title">Dampak Negatif Media Sosial</h3>
+                        <ul class="number-list">
+                            <li><strong>Pengaruh terhadap kesehatan emosional:</strong> Perasaan iri, tidak puas, narsisme, ketagihan</li>
+                            <li><strong>Cyberbullying:</strong> Komentar negatif yang menyebabkan depresi</li>
+                            <li><strong>Berita bohong (hoaks) dan ujaran kebencian:</strong> Informasi palsu yang menyebar cepat</li>
+                            <li><strong>Pencurian data:</strong> Penyalahgunaan data pribadi untuk akun palsu</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 7: Bab 1 - Mengkaji Informasi di Media Sosial -->
+            <div class="slide" id="slide7">
+                <div class="slide-number">7</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-right">
+                        <i class="fas fa-search"></i><br>
+                        MENGKAJI INFORMASI DI MEDIA SOSIAL
+                    </h1>
+                    
+                    <div class="image-right-layout">
+                        <div class="text-content-side slide-in-left">
+                            <div class="material-section">
+                                <h3 class="section-title">Cara Mengenali Berita Bohong (Hoaks)</h3>
+                                <ol class="number-list">
+                                    <li><strong>Cek sumber berita:</strong> Apakah dari media terpercaya?</li>
+                                    <li><strong>Waspada website palsu:</strong> Periksa tampilan dan URL website</li>
+                                    <li><strong>Mengecek ulang dengan sumber lain:</strong> Bandingkan dengan media lain</li>
+                                    <li><strong>Mengecek kebenaran gambar:</strong> Gunakan Google Image Search</li>
+                                    <li><strong>Gunakan akal sehat:</strong> Pikirkan apakah informasi masuk akal</li>
+                                    <li><strong>Berhati-hati dengan konten AI:</strong> Waspada deepfake dan konten buatan AI</li>
+                                </ol>
+                            </div>
+                        </div>
+                        
+                        <div class="image-container-side slide-in-right">
+                            <img src="https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Mengkaji Informasi">
+                            <p class="image-caption-side">Verifikasi informasi sebelum membagikan</p>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-box">
+                        <div class="activity-title">
+                            <i class="fas fa-images"></i>
+                            <h3>Cara Mengecek Gambar dengan Google Images</h3>
+                        </div>
+                        <ol class="compact-list">
+                            <li>Buka https://images.google.com</li>
+                            <li>Simpan gambar yang ingin dicek (screenshot)</li>
+                            <li>Unggah gambar ke Google Images</li>
+                            <li>Perhatikan hasil pencarian gambar yang sama</li>
+                            <li>Cek situs pertama yang mengunggah gambar tersebut</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 8: Bab 1 - Etika Bermedia Digital -->
+            <div class="slide" id="slide8">
+                <div class="slide-number">8</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-left">
+                        <i class="fas fa-handshake"></i><br>
+                        ETIKA BERMEDIA DIGITAL
+                    </h1>
+                    
+                    <div class="image-side-layout">
+                        <div class="image-container-side slide-in-left">
+                            <img src="https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Etika Digital">
+                            <p class="image-caption-side">Etika penting dalam berkomunikasi di dunia digital</p>
+                        </div>
+                        
+                        <div class="text-content-side slide-in-right">
+                            <div class="material-section">
+                                <h3 class="section-title">C. Etika dalam Bermedia Digital</h3>
+                                <p class="slide-text">
+                                    Etika adalah aturan tentang sikap dan perilaku yang baik dan sopan saat berinteraksi di dunia digital. Sebagai netizen/warganet, kita perlu memahami aturan sopan santun (netiket).
+                                </p>
+                                
+                                <div class="content-grid">
+                                    <div class="content-card">
+                                        <h4><i class="fas fa-users"></i> Etika Tradisional</h4>
+                                        <p>Berlaku dalam kehidupan sehari-hari (offline)</p>
+                                    </div>
+                                    
+                                    <div class="content-card">
+                                        <h4><i class="fas fa-globe"></i> Etika Digital</h4>
+                                        <p>Berlaku di ruang digital (online)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="material-section">
+                        <h3 class="section-title">Aturan Netiket (Internet Etiquette)</h3>
+                        <ul class="number-list">
+                            <li>Ingatlah keberadaan orang lain (berempati)</li>
+                            <li>Bersikap sama baiknya seperti di dunia nyata</li>
+                            <li>Pikirkan dulu sebelum berkomentar atau mengunggah</li>
+                            <li>Hargai waktu dan kuota orang lain</li>
+                            <li>Gunakan bahasa yang sopan</li>
+                            <li>Bagikan hal yang bermanfaat</li>
+                            <li>Jaga diskusi tetap sehat</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 9: Bab 1 - Berinteraksi dengan Bijak -->
+            <div class="slide" id="slide9">
+                <div class="slide-number">9</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-right">
+                        <i class="fas fa-comments"></i><br>
+                        BERINTERAKSI DENGAN BIJAK
+                    </h1>
+                    
+                    <div class="image-right-layout">
+                        <div class="text-content-side slide-in-left">
+                            <div class="material-section">
+                                <h3 class="section-title">Cara Bijak Berinteraksi di Aplikasi Percakapan</h3>
+                                <ul class="number-list">
+                                    <li><strong>Jaga privasi orang lain:</strong> Jangan membagikan data pribadi tanpa izin</li>
+                                    <li><strong>Perkenalkan diri saat menghubungi orang baru:</strong> Sapa dan jelaskan identitas</li>
+                                    <li><strong>Minta izin sebelum membuat atau menambah anggota grup:</strong> Tanyakan kesediaan</li>
+                                    <li><strong>Jangan langsung meneruskan pesan:</strong> Pastikan kebenaran dan sumbernya</li>
+                                    <li><strong>Gunakan tangkapan layar dengan bijak:</strong> Jangan untuk menyakiti orang lain</li>
+                                    <li><strong>Perhatikan foto yang dikirim:</strong> Pastikan sopan dan pantas</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="image-container-side slide-in-right">
+                            <img src="https://images.unsplash.com/photo-1587560699334-cc4ff634909a?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Komunikasi Digital">
+                            <p class="image-caption-side">Komunikasi yang baik membangun hubungan sehat</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 10: Bab 1 - Cyberbullying -->
+            <div class="slide" id="slide10">
+                <div class="slide-number">10</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-left">
+                        <i class="fas fa-exclamation-triangle"></i><br>
+                        CYBERBULLYING
+                    </h1>
+                    
+                    <div class="image-side-layout">
+                        <div class="image-container-side slide-in-left">
+                            <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Cyberbullying">
+                            <p class="image-caption-side">Cyberbullying berdampak serius pada korban</p>
+                        </div>
+                        
+                        <div class="text-content-side slide-in-right">
+                            <div class="material-section">
+                                <h3 class="section-title">D. Pengertian Cyberbullying</h3>
+                                <p class="slide-text">
+                                    Cyberbullying adalah perundungan yang terjadi di dunia maya menggunakan media digital seperti media sosial, aplikasi chat, game online, dan platform digital lainnya. Biasanya dilakukan berulang kali dalam waktu lama.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="material-section">
+                        <h3 class="section-title">Bentuk-bentuk Cyberbullying</h3>
+                        <div class="content-grid">
+                            <div class="content-card">
+                                <h4>Bentuk Umum</h4>
+                                <ul class="compact-list">
+                                    <li>Menyebarkan kebohongan tentang seseorang</li>
+                                    <li>Mengunggah foto/video memalukan</li>
+                                    <li>Mengirim pesan kasar/hinaan/ancaman</li>
+                                    <li>Komentar jahat di media sosial</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="content-card">
+                                <h4>Bentuk Lainnya</h4>
+                                <ul class="compact-list">
+                                    <li>Menggunakan akun palsu untuk menghina</li>
+                                    <li>Trolling (memicu emosi)</li>
+                                    <li>Mengucilkan dari grup digital</li>
+                                    <li>Membuat grup khusus untuk membicarakan kejelekan</li>
+                                    <li>Menghasut orang lain untuk mengejek</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 11: Bab 1 - Dampak Cyberbullying -->
+            <div class="slide" id="slide11">
+                <div class="slide-number">11</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-right">
+                        <i class="fas fa-heart-broken"></i><br>
+                        DAMPAK CYBERBULLYING
+                    </h1>
+                    
+                    <div class="image-right-layout">
+                        <div class="text-content-side slide-in-left">
+                            <div class="material-section">
+                                <h3 class="section-title">Beda Bercanda dan Perundungan</h3>
+                                <p class="slide-text">
+                                    <strong>Bercanda berubah menjadi perundungan jika:</strong>
+                                </p>
+                                <ul class="number-list">
+                                    <li>Tidak semua orang merasa senang atau tertawa</li>
+                                    <li>Ada orang yang merasa tersinggung, sedih, atau malu</li>
+                                    <li>Seseorang dijadikan bahan ejekan terus-menerus</li>
+                                    <li>Candaan diulang dan membuat tidak nyaman</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="image-container-side slide-in-right">
+                            <img src="https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Dampak Cyberbullying">
+                            <p class="image-caption-side">Dukungan sosial penting untuk korban cyberbullying</p>
+                        </div>
+                    </div>
+                    
+                    <div class="material-section">
+                        <h3 class="section-title">Dampak pada Korban</h3>
+                        <div class="content-grid">
+                            <div class="content-card">
+                                <h4><i class="fas fa-brain"></i> Mental & Emosional</h4>
+                                <ul class="compact-list">
+                                    <li>Malu, kesal, marah</li>
+                                    <li>Khawatir berlebihan</li>
+                                    <li>Tidak percaya orang lain</li>
+                                    <li>Kehilangan minat pada hal yang disukai</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="content-card">
+                                <h4><i class="fas fa-user-injured"></i> Fisik</h4>
+                                <ul class="compact-list">
+                                    <li>Lelah terus-menerus</li>
+                                    <li>Sakit perut dan kepala</li>
+                                    <li>Gejala depresi</li>
+                                    <li>Dalam kasus ekstrem: pikiran untuk bunuh diri</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 12: Bab 1 - Penanganan Cyberbullying -->
+            <div class="slide" id="slide12">
+                <div class="slide-number">12</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-left">
+                        <i class="fas fa-hands-helping"></i><br>
+                        PENANGANAN CYBERBULLYING
+                    </h1>
+                    
+                    <div class="image-side-layout">
+                        <div class="image-container-side slide-in-left">
+                            <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Penanganan Cyberbullying">
+                            <p class="image-caption-side">Bersama kita bisa menghentikan cyberbullying</p>
+                        </div>
+                        
+                        <div class="text-content-side slide-in-right">
+                            <div class="material-section">
+                                <h3 class="section-title">Jika Menjadi Korban</h3>
+                                <ol class="number-list">
+                                    <li><strong>Jangan diam:</strong> Ceritakan kejadian kepada guru atau orang tua</li>
+                                    <li><strong>Jangan membalas:</strong> Membalas hanya memperburuk situasi</li>
+                                    <li><strong>Simpan bukti:</strong> Screenshot pesan, komentar, atau konten</li>
+                                    <li><strong>Blokir pelaku:</strong> Blokir akun pelaku di platform</li>
+                                    <li><strong>Laporkan:</strong> Laporkan ke platform media sosial</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="material-section">
+                        <h3 class="section-title">Jika Melihat Cyberbullying</h3>
+                        <ol class="number-list">
+                            <li><strong>Jangan ikut menyebar:</strong> Jangan share atau like konten bullying</li>
+                            <li><strong>Dukung korban:</strong> Beri dukungan moral pada korban</li>
+                            <li><strong>Laporkan konten:</strong> Laporkan ke platform</li>
+                            <li><strong>Jadilah teman baik:</strong> Ajak korban bicara</li>
+                            <li><strong>Laporkan ke pihak berwenang:</strong> Guru, orang tua, atau sekolah</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 13: Evaluasi Bab 1 - Pilihan Ganda (10 soal) -->
+            <div class="slide evaluation-slide" id="slide13">
+                <div class="slide-number">13</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-right">
+                        <i class="fas fa-clipboard-check"></i><br>
+                        EVALUASI BAB 1<br>
+                        <small>Jejak Bermedia Digital</small>
+                    </h1>
+                    
+                    <div class="evaluation-container">
+                        <h3><i class="fas fa-list-ol"></i> Soal Pilihan Ganda (10 soal)</h3>
+                        <p class="slide-text">Pilihlah jawaban yang paling benar dengan mengklik opsi yang tersedia!</p>
+                        
+                        <div id="bab1-mc-questions">
+                            <!-- Soal akan di-generate oleh JavaScript -->
+                        </div>
+                        
+                        <div class="evaluation-buttons">
+                            <button class="eval-btn" onclick="checkBab1MCAnswers()">
+                                <i class="fas fa-check-circle"></i> Periksa Jawaban
+                            </button>
+                            <button class="eval-btn" onclick="resetBab1MCAnswers()">
+                                <i class="fas fa-redo"></i> Ulangi Soal
+                            </button>
+                        </div>
+                        
+                        <div id="bab1-mc-results" style="display: none;">
+                            <!-- Hasil akan ditampilkan di sini -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-nav">
+                        <button class="quiz-btn" onclick="goToSlide(12)">
+                            <i class="fas fa-arrow-left"></i> Sebelumnya
+                        </button>
+                        <button class="quiz-btn" onclick="goToSlide(14)">
+                            Lanjut ke Soal Isian <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 14: Evaluasi Bab 1 - Isian (5 soal) -->
+            <div class="slide evaluation-slide" id="slide14">
+                <div class="slide-number">14</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-left">
+                        <i class="fas fa-edit"></i><br>
+                        EVALUASI BAB 1<br>
+                        <small>Soal Isian Singkat</small>
+                    </h1>
+                    
+                    <div class="evaluation-container">
+                        <h3><i class="fas fa-keyboard"></i> Soal Isian Singkat (5 soal)</h3>
+                        <p class="slide-text">Isilah jawaban yang tepat pada kolom yang disediakan!</p>
+                        
+                        <div id="bab1-fill-questions">
+                            <!-- Soal akan di-generate oleh JavaScript -->
+                        </div>
+                        
+                        <div class="evaluation-buttons">
+                            <button class="eval-btn" onclick="checkBab1FillAnswers()">
+                                <i class="fas fa-check-circle"></i> Periksa Jawaban
+                            </button>
+                            <button class="eval-btn" onclick="resetBab1FillAnswers()">
+                                <i class="fas fa-redo"></i> Ulangi Soal
+                            </button>
+                        </div>
+                        
+                        <div id="bab1-fill-results" style="display: none;">
+                            <!-- Hasil akan ditampilkan di sini -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-nav">
+                        <button class="quiz-btn" onclick="goToSlide(13)">
+                            <i class="fas fa-arrow-left"></i> Kembali ke PG
+                        </button>
+                        <button class="quiz-btn" onclick="goToSlide(15)">
+                            Lanjut ke Bab 2 <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 15: Bab 2 - Pendahuluan dengan PETA KONSEP MENARIK -->
+            <div class="slide" id="slide15">
+                <div class="slide-number">15</div>
+                <div class="slide-content">
+                    <div class="image-container-side slide-in-right">
+                        <img src="https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                             alt="Perangkat Digital">
+                        <p class="image-caption-side">Perangkat digital menjadi bagian penting kehidupan modern</p>
+                    </div>
+                    
+                    <div class="slide-in-right">
+                        <h1 class="slide-title">
+                            <i class="fas fa-laptop"></i><br>
+                            BAB 2: PEMANFAATAN PERANGKAT DIGITAL
+                        </h1>
+                    </div>
+                    
+                    <div class="material-section">
+                        <h3 class="section-title">Tujuan Pembelajaran</h3>
+                        <p class="slide-text">
+                            Setelah mempelajari bab ini, siswa mampu:
+                        </p>
+                        <ol class="number-list">
+                            <li>Memahami cara media digital digunakan untuk membuat dan menyebarkan konten</li>
+                            <li>Mengetahui cara komputer menyimpan dan mengolah data</li>
+                            <li>Memahami bagaimana data dikirim melalui internet dan jaringan ponsel</li>
+                            <li>Menggunakan alat teknologi digital untuk membuat laporan dan presentasi</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="material-section">
+                        <h3 class="section-title">Peta Konsep - Sistem Komputer</h3>
+                        
+                        <div class="concept-map-container">
+                            <div class="concept-map">
+                                <div class="concept-item scale-up" style="animation-delay: 0.1s;">
+                                    <div class="concept-icon">
+                                        <i class="fas fa-microchip"></i>
+                                    </div>
+                                    <h4>Hardware</h4>
+                                    <p>Perangkat keras fisik sistem komputer</p>
+                                    <ul class="compact-list">
+                                        <li>CPU</li>
+                                        <li>RAM</li>
+                                        <li>Storage</li>
+                                        <li>Peripheral</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="concept-item scale-up" style="animation-delay: 0.2s;">
+                                    <div class="concept-icon">
+                                        <i class="fas fa-code"></i>
+                                    </div>
+                                    <h4>Software</h4>
+                                    <p>Program dan aplikasi komputer</p>
+                                    <ul class="compact-list">
+                                        <li>Sistem Operasi</li>
+                                        <li>Aplikasi</li>
+                                        <li>Utility</li>
+                                        <li>Driver</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="concept-item scale-up" style="animation-delay: 0.3s;">
+                                    <div class="concept-icon">
+                                        <i class="fas fa-network-wired"></i>
+                                    </div>
+                                    <h4>Jaringan</h4>
+                                    <p>Koneksi dan komunikasi data</p>
+                                    <ul class="compact-list">
+                                        <li>LAN/WAN</li>
+                                        <li>Internet</li>
+                                        <li>WiFi/Data</li>
+                                        <li>Protokol</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="concept-item scale-up" style="animation-delay: 0.4s;">
+                                    <div class="concept-icon">
+                                        <i class="fas fa-tools"></i>
+                                    </div>
+                                    <h4>Aplikasi</h4>
+                                    <p>Software produktivitas</p>
+                                    <ul class="compact-list">
+                                        <li>Pengolah Kata</li>
+                                        <li>Pengolah Angka</li>
+                                        <li>Presentasi</li>
+                                        <li>Editor</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="concept-connections">
+                                <div class="connection-line"></div>
+                                <div class="connection-line"></div>
+                                <div class="connection-line"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="important-note fade-in" style="margin-top: 15px;">
+                            <h3><i class="fas fa-lightbulb"></i> Keterkaitan Konsep</h3>
+                            <p>Semua komponen bekerja sama membentuk sistem komputer yang lengkap. Hardware menjalankan software, software memanfaatkan jaringan, dan aplikasi digunakan untuk menciptakan konten digital.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 16: Bab 2 - Komponen Sistem Komputer -->
+            <div class="slide" id="slide16">
+                <div class="slide-number">16</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-left">
+                        <i class="fas fa-microchip"></i><br>
+                        KOMPONEN SISTEM KOMPUTER
+                    </h1>
+                    
+                    <div class="image-side-layout">
+                        <div class="image-container-side slide-in-left">
+                            <img src="https://images.unsplash.com/photo-1593640408182-31c70c8268f5?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Komponen Komputer">
+                            <p class="image-caption-side">Komponen komputer bekerja sama untuk menjalankan tugas</p>
+                        </div>
+                        
+                        <div class="text-content-side slide-in-right">
+                            <div class="material-section">
+                                <h3 class="section-title">A. Komponen Sistem Komputer</h3>
+                                <p class="slide-text">
+                                    Sistem komputer terdiri dari tiga komponen utama:
+                                </p>
+                                
+                                <div class="content-grid">
+                                    <div class="content-card">
+                                        <h4><i class="fas fa-desktop"></i> Hardware</h4>
+                                        <p>Perangkat keras yang dapat disentuh</p>
+                                        <ul class="compact-list">
+                                            <li>CPU, RAM, Hard Disk</li>
+                                            <li>Monitor, Keyboard, Mouse</li>
+                                            <li>Printer, Scanner</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="content-card">
+                                        <h4><i class="fas fa-file-code"></i> Software</h4>
+                                        <p>Program yang menjalankan komputer</p>
+                                        <ul class="compact-list">
+                                            <li>Sistem Operasi (Windows, Linux)</li>
+                                            <li>Aplikasi (Office, Browser)</li>
+                                            <li>Utility, Driver, Antivirus</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="content-card">
+                                        <h4><i class="fas fa-user"></i> Brainware</h4>
+                                        <p>Pengguna/pemakai komputer</p>
+                                        <ul class="compact-list">
+                                            <li>Operator</li>
+                                            <li>Programmer</li>
+                                            <li>Analyst</li>
+                                            <li>User</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="material-section">
+                        <h3 class="section-title">Fungsi Utama Sistem Komputer</h3>
+                        <ol class="number-list">
+                            <li><strong>Input:</strong> Menerima data (keyboard, mouse, scanner)</li>
+                            <li><strong>Processing:</strong> Mengolah data (CPU)</li>
+                            <li><strong>Output:</strong> Menghasilkan informasi (monitor, printer)</li>
+                            <li><strong>Storage:</strong> Menyimpan data (hard disk, flashdisk)</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 17: Bab 2 - Pengalamatan Memori -->
+            <div class="slide" id="slide17">
+                <div class="slide-number">17</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-right">
+                        <i class="fas fa-memory"></i><br>
+                        PENGALAMATAN MEMORI
+                    </h1>
+                    
+                    <div class="image-right-layout">
+                        <div class="text-content-side slide-in-left">
+                            <div class="material-section">
+                                <h3 class="section-title">B. Pengalamatan Memori</h3>
+                                <p class="slide-text">
+                                    Pengalamatan memori adalah cara komputer memberi alamat pada setiap data yang disimpan di memori, agar data tersebut mudah ditemukan dan digunakan kembali.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="image-container-side slide-in-right">
+                            <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Memori Komputer">
+                            <p class="image-caption-side">Memori komputer menyimpan data secara terorganisir</p>
+                        </div>
+                    </div>
+                    
+                    <div class="material-section">
+                        <h3 class="section-title">Sistem Bilangan dalam Komputer</h3>
+                        <table class="slide-table">
+                            <thead>
+                                <tr>
+                                    <th>Sistem</th>
+                                    <th>Basis</th>
+                                    <th>Simbol</th>
+                                    <th>Penggunaan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Desimal</td>
+                                    <td>10</td>
+                                    <td>0-9</td>
+                                    <td>Kehidupan sehari-hari</td>
+                                </tr>
+                                <tr>
+                                    <td>Biner</td>
+                                    <td>2</td>
+                                    <td>0, 1</td>
+                                    <td>Bahasa mesin komputer</td>
+                                </tr>
+                                <tr>
+                                    <td>Heksadesimal</td>
+                                    <td>16</td>
+                                    <td>0-9, A-F</td>
+                                    <td>Pengalamatan memori</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 18: Bab 2 - Central Processing Unit (CPU) -->
+            <div class="slide" id="slide18">
+                <div class="slide-number">18</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-left">
+                        <i class="fas fa-brain"></i><br>
+                        CENTRAL PROCESSING UNIT (CPU)
+                    </h1>
+                    
+                    <div class="image-side-layout">
+                        <div class="image-container-side slide-in-left">
+                            <!-- GAMBAR CPU YANG BISA DIBUKA -->
+                            <img src="https://images.pexels.com/photos/2582937/pexels-photo-2582937.jpeg?auto=compress&cs=tinysrgb&w=600" 
+                                 alt="CPU Komputer" class="slide-image"
+                                 onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"600\" height=\"400\" viewBox=\"0 0 600 400\"><rect width=\"600\" height=\"400\" fill=\"%232e7d32\"/><text x=\"300\" y=\"180\" font-family=\"Arial\" font-size=\"24\" fill=\"white\" text-anchor=\"middle\">Central Processing Unit</text><text x=\"300\" y=\"220\" font-family=\"Arial\" font-size=\"18\" fill=\"white\" text-anchor=\"middle\">(Otak Komputer)</text></svg>'">
+                            <p class="image-caption-side">CPU adalah otak komputer yang memproses semua perintah</p>
+                        </div>
+                        
+                        <div class="text-content-side slide-in-right">
+                            <div class="material-section">
+                                <h3 class="section-title">C. CPU - Otak Komputer</h3>
+                                <p class="slide-text">
+                                    CPU adalah bagian paling penting dalam komputer yang berfungsi sebagai otak komputer. Bertugas memproses semua perintah atau instruksi.
+                                </p>
+                                
+                                <div class="highlight-text">
+                                    <h4><i class="fas fa-info-circle"></i> Karakteristik CPU</h4>
+                                    <p><strong>Kecepatan:</strong> Diukur dalam GHz (Gigahertz)</p>
+                                    <p><strong>Inti Prosesor:</strong> Single-core, Dual-core, Quad-core, dll.</p>
+                                    <p><strong>Cache:</strong> Memori kecil berkecepatan tinggi di dalam CPU</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="material-section">
+                        <h3 class="section-title">Bagian-bagian CPU</h3>
+                        <div class="content-grid">
+                            <div class="content-card">
+                                <h4><i class="fas fa-calculator"></i> ALU</h4>
+                                <p><strong>Arithmetic Logic Unit</strong></p>
+                                <p>Mengolah data matematika dan logika</p>
+                                <ul class="compact-list">
+                                    <li>Penjumlahan & Pengurangan</li>
+                                    <li>Perbandingan Data</li>
+                                    <li>Operasi Logika (AND, OR, NOT)</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="content-card">
+                                <h4><i class="fas fa-cogs"></i> Control Unit</h4>
+                                <p><strong>Unit Kontrol</strong></p>
+                                <p>Mengatur alur data dan instruksi</p>
+                                <ul class="compact-list">
+                                    <li>Mengambil instruksi dari memori</li>
+                                    <li>Menguraikan instruksi</li>
+                                    <li>Mengontrol eksekusi</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="content-card">
+                                <h4><i class="fas fa-database"></i> Register</h4>
+                                <p><strong>Penyimpanan Sementara</strong></p>
+                                <p>Menyimpan data yang sedang diproses</p>
+                                <ul class="compact-list">
+                                    <li>Register Data</li>
+                                    <li>Register Alamat</li>
+                                    <li>Register Status</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 19: Bab 2 - Jaringan Komputer -->
+            <div class="slide" id="slide19">
+                <div class="slide-number">19</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-right">
+                        <i class="fas fa-network-wired"></i><br>
+                        JARINGAN KOMPUTER
+                    </h1>
+                    
+                    <div class="image-right-layout">
+                        <div class="text-content-side slide-in-left">
+                            <div class="material-section">
+                                <h3 class="section-title">D. Jaringan Komputer</h3>
+                                <p class="slide-text">
+                                    Jaringan komputer adalah hubungan antar perangkat untuk berbagi data dan sumber daya.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="image-container-side slide-in-right">
+                            <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Jaringan Komputer">
+                            <p class="image-caption-side">Jaringan komputer menghubungkan perangkat di seluruh dunia</p>
+                        </div>
+                    </div>
+                    
+                    <div class="material-section">
+                        <h3 class="section-title">Jenis-jenis Jaringan</h3>
+                        <div class="content-grid">
+                            <div class="content-card">
+                                <h4><i class="fas fa-home"></i> LAN</h4>
+                                <p><strong>Local Area Network</strong></p>
+                                <p>Jaringan area lokal (sekolah, kantor, rumah)</p>
+                                <ul class="compact-list">
+                                    <li>Radius: 1 km</li>
+                                    <li>Kecepatan: 10 Mbps - 10 Gbps</li>
+                                    <li>Contoh: Ethernet, WiFi</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="content-card">
+                                <h4><i class="fas fa-city"></i> MAN</h4>
+                                <p><strong>Metropolitan Area Network</strong></p>
+                                <p>Jaringan dalam satu kota</p>
+                                <ul class="compact-list">
+                                    <li>Radius: 10-50 km</li>
+                                    <li>Kecepatan: Tinggi</li>
+                                    <li>Contoh: Jaringan kampus besar</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="content-card">
+                                <h4><i class="fas fa-globe"></i> WAN</h4>
+                                <p><strong>Wide Area Network</strong></p>
+                                <p>Jaringan luas (internet)</p>
+                                <ul class="compact-list">
+                                    <li>Radius: Tak terbatas</li>
+                                    <li>Kecepatan: Bervariasi</li>
+                                    <li>Contoh: Internet global</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 20: Bab 2 - Komunikasi Data pada Ponsel -->
+            <div class="slide" id="slide20">
+                <div class="slide-number">20</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-left">
+                        <i class="fas fa-mobile-alt"></i><br>
+                        KOMUNIKASI DATA PADA PONSEL
+                    </h1>
+                    
+                    <div class="image-side-layout">
+                        <div class="image-container-side slide-in-left">
+                            <img src="https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Komunikasi Data Ponsel">
+                            <p class="image-caption-side">Kualitas komunikasi dipengaruhi kekuatan sinyal</p>
+                        </div>
+                        
+                        <div class="text-content-side slide-in-right">
+                            <div class="material-section">
+                                <h3 class="section-title">E. Komunikasi Data pada Ponsel</h3>
+                                <p class="slide-text">
+                                    Komunikasi data pada ponsel terjadi melalui jaringan internet. Kualitas komunikasi dipengaruhi oleh kekuatan sinyal.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="material-section">
+                        <h3 class="section-title">Faktor yang Mempengaruhi Kualitas Sinyal</h3>
+                        <ul class="number-list">
+                            <li><strong>Jarak dari BTS (Base Transceiver Station):</strong> Semakin jauh, sinyal semakin lemah</li>
+                            <li><strong>Penghalang fisik:</strong> Gedung, pohon, tembok mengurangi sinyal</li>
+                            <li><strong>Cuaca:</strong> Hujan lebat dapat mengganggu sinyal</li>
+                            <li><strong>Jumlah pengguna:</strong> Terlalu banyak pengguna dalam satu area</li>
+                            <li><strong>Teknologi jaringan:</strong> 3G, 4G, 5G memiliki kecepatan berbeda</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 21: Bab 2 - Terhubung ke Internet dengan Aman -->
+            <div class="slide" id="slide21">
+                <div class="slide-number">21</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-right">
+                        <i class="fas fa-shield-alt"></i><br>
+                        TERHUBUNG KE INTERNET DENGAN AMAN
+                    </h1>
+                    
+                    <div class="image-right-layout">
+                        <div class="text-content-side slide-in-left">
+                            <div class="material-section">
+                                <h3 class="section-title">F. Keamanan Berinternet</h3>
+                                <p class="slide-text">
+                                    Setiap aktivitas di internet meninggalkan jejak digital. Kita harus berhati-hati untuk melindungi data dan privasi.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="image-container-side slide-in-right">
+                            <img src="https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Keamanan Internet">
+                            <p class="image-caption-side">Keamanan data penting saat menggunakan internet</p>
+                        </div>
+                    </div>
+                    
+                    <div class="material-section">
+                        <h3 class="section-title">Cara Aman Berinternet</h3>
+                        <ol class="number-list">
+                            <li><strong>Gunakan password kuat:</strong> Kombinasi huruf, angka, simbol (minimal 8 karakter)</li>
+                            <li><strong>Jangan klik tautan mencurigakan:</strong> Waspada phishing dan malware</li>
+                            <li><strong>Atur keamanan browser:</strong> Aktifkan fitur keamanan dan privasi</li>
+                            <li><strong>Waspada penipuan online:</strong> Jangan percaya tawaran terlalu bagus</li>
+                            <li><strong>Gunakan WiFi publik dengan hati-hati:</strong> Hindari transaksi penting</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 22: Bab 2 - Perangkat Lunak Aplikasi -->
+            <div class="slide" id="slide22">
+                <div class="slide-number">22</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-left">
+                        <i class="fas fa-file-alt"></i><br>
+                        PERANGKAT LUNAK APLIKASI
+                    </h1>
+                    
+                    <div class="image-side-layout">
+                        <div class="image-container-side slide-in-left">
+                            <img src="https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Aplikasi Perangkat Lunak">
+                            <p class="image-caption-side">Setiap aplikasi memiliki fungsi spesifik</p>
+                        </div>
+                        
+                        <div class="text-content-side slide-in-right">
+                            <div class="material-section">
+                                <h3 class="section-title">G. Jenis-jenis Aplikasi</h3>
+                                <p class="slide-text">
+                                    Setiap aplikasi memiliki fungsi spesifik untuk mengolah berbagai jenis konten digital.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <table class="slide-table">
+                        <thead>
+                            <tr>
+                                <th>Jenis Aplikasi</th>
+                                <th>Fungsi</th>
+                                <th>Contoh</th>
+                                <th>Format File</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Pengolah Kata</td>
+                                <td>Membuat dokumen teks</td>
+                                <td>Word, Google Docs</td>
+                                <td>.docx, .pdf, .txt</td>
+                            </tr>
+                            <tr>
+                                <td>Pengolah Angka</td>
+                                <td>Analisis data & tabel</td>
+                                <td>Excel, Google Sheets</td>
+                                <td>.xlsx, .csv</td>
+                            </tr>
+                            <tr>
+                                <td>Presentasi</td>
+                                <td>Membuat slide presentasi</td>
+                                <td>PowerPoint, Google Slides</td>
+                                <td>.pptx, .pdf</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="material-section">
+                        <h3 class="section-title">H. Pembuatan Laporan dengan Aplikasi Pengolah Kata</h3>
+                        <p class="slide-text">
+                            Format laporan yang baik menggunakan aplikasi pengolah kata:
+                        </p>
+                        <ol class="number-list">
+                            <li><strong>Judul:</strong> Jelas dan deskriptif</li>
+                            <li><strong>Struktur:</strong> Pendahuluan, isi, penutup</li>
+                            <li><strong>Fitur:</strong> Penomoran, tabel, header, footer</li>
+                            <li><strong>Tampilan:</strong> Rapi, konsisten, mudah dibaca</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 23: Bab 2 - Merangkum Narasi Digital -->
+            <div class="slide" id="slide23">
+                <div class="slide-number">23</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-right">
+                        <i class="fas fa-book-reader"></i><br>
+                        MERANGKUM NARASI DIGITAL
+                    </h1>
+                    
+                    <div class="image-right-layout">
+                        <div class="text-content-side slide-in-left">
+                            <div class="material-section">
+                                <h3 class="section-title">I. Merangkum Narasi dari Konten Digital</h3>
+                                <p class="slide-text">
+                                    Internet menyediakan banyak informasi digital dalam berbagai bentuk: teks, gambar, video, animasi, hyperlink.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="image-container-side slide-in-right">
+                            <img src="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                                 alt="Merangkum Narasi">
+                            <p class="image-caption-side">Internet menyediakan banyak informasi dalam berbagai format</p>
+                        </div>
+                    </div>
+                    
+                    <div class="material-section">
+                        <h3 class="section-title">Langkah-langkah Merangkum</h3>
+                        <ol class="number-list">
+                            <li><strong>Baca/tonton dengan teliti:</strong> Pahami keseluruhan konten</li>
+                            <li><strong>Identifikasi ide pokok:</strong> Temukan gagasan utama setiap bagian</li>
+                            <li><strong>Catat poin penting:</strong> Tuliskan informasi kunci</li>
+                            <li><strong>Tulis dengan bahasa sendiri:</strong> Parafrase, jangan copy-paste</li>
+                            <li><strong>Periksa keakuratan:</strong> Pastikan informasi benar dan relevan</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 24: Evaluasi Bab 2 - Pilihan Ganda (10 soal) -->
+            <div class="slide evaluation-slide" id="slide24">
+                <div class="slide-number">24</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-left">
+                        <i class="fas fa-clipboard-check"></i><br>
+                        EVALUASI BAB 2<br>
+                        <small>Pemanfaatan Perangkat Digital</small>
+                    </h1>
+                    
+                    <div class="evaluation-container">
+                        <h3><i class="fas fa-list-ol"></i> Soal Pilihan Ganda (10 soal)</h3>
+                        <p class="slide-text">Pilihlah jawaban yang paling benar dengan mengklik opsi yang tersedia!</p>
+                        
+                        <div id="bab2-mc-questions">
+                            <!-- Soal akan di-generate oleh JavaScript -->
+                        </div>
+                        
+                        <div class="evaluation-buttons">
+                            <button class="eval-btn" onclick="checkBab2MCAnswers()">
+                                <i class="fas fa-check-circle"></i> Periksa Jawaban
+                            </button>
+                            <button class="eval-btn" onclick="resetBab2MCAnswers()">
+                                <i class="fas fa-redo"></i> Ulangi Soal
+                            </button>
+                        </div>
+                        
+                        <div id="bab2-mc-results" style="display: none;">
+                            <!-- Hasil akan ditampilkan di sini -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-nav">
+                        <button class="quiz-btn" onclick="goToSlide(23)">
+                            <i class="fas fa-arrow-left"></i> Sebelumnya
+                        </button>
+                        <button class="quiz-btn" onclick="goToSlide(25)">
+                            Lanjut ke Soal Isian <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 25: Evaluasi Bab 2 - Isian (5 soal) -->
+            <div class="slide evaluation-slide" id="slide25">
+                <div class="slide-number">25</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-right">
+                        <i class="fas fa-edit"></i><br>
+                        EVALUASI BAB 2<br>
+                        <small>Soal Isian Singkat</small>
+                    </h1>
+                    
+                    <div class="evaluation-container">
+                        <h3><i class="fas fa-keyboard"></i> Soal Isian Singkat (5 soal)</h3>
+                        <p class="slide-text">Isilah jawaban yang tepat pada kolom yang disediakan!</p>
+                        
+                        <div id="bab2-fill-questions">
+                            <!-- Soal akan di-generate oleh JavaScript -->
+                        </div>
+                        
+                        <div class="evaluation-buttons">
+                            <button class="eval-btn" onclick="checkBab2FillAnswers()">
+                                <i class="fas fa-check-circle"></i> Periksa Jawaban
+                            </button>
+                            <button class="eval-btn" onclick="resetBab2FillAnswers()">
+                                <i class="fas fa-redo"></i> Ulangi Soal
+                            </button>
+                        </div>
+                        
+                        <div id="bab2-fill-results" style="display: none;">
+                            <!-- Hasil akan ditampilkan di sini -->
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-nav">
+                        <button class="quiz-btn" onclick="goToSlide(24)">
+                            <i class="fas fa-arrow-left"></i> Kembali ke PG
+                        </button>
+                        <button class="quiz-btn" onclick="goToSlide(26)">
+                            Lihat Hasil Evaluasi <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 26: Hasil Evaluasi Keseluruhan -->
+            <div class="slide" id="slide26">
+                <div class="slide-number">26</div>
+                <div class="slide-content">
+                    <h1 class="slide-title slide-in-left">
+                        <i class="fas fa-chart-line"></i><br>
+                        HASIL EVALUASI PEMBELAJARAN
+                    </h1>
+                    
+                    <div class="results-container">
+                        <h3><i class="fas fa-trophy"></i> Ringkasan Hasil Evaluasi</h3>
+                        
+                        <div class="content-grid">
+                            <div class="content-card">
+                                <h4><i class="fas fa-book"></i> Bab 1</h4>
+                                <p><strong>Jejak Bermedia Digital</strong></p>
+                                <div class="score-display">
+                                    <div class="score-circle" id="bab1-score">0%</div>
+                                </div>
+                            </div>
+                            
+                            <div class="content-card">
+                                <h4><i class="fas fa-laptop"></i> Bab 2</h4>
+                                <p><strong>Pemanfaatan Perangkat Digital</strong></p>
+                                <div class="score-display">
+                                    <div class="score-circle" id="bab2-score">0%</div>
+                                </div>
+                            </div>
+                            
+                            <div class="content-card">
+                                <h4><i class="fas fa-chart-pie"></i> Rata-rata</h4>
+                                <p><strong>Nilai Keseluruhan</strong></p>
+                                <div class="score-display">
+                                    <div class="score-circle" id="total-score">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="final-feedback" class="feedback">
+                            <!-- Feedback akan diisi oleh JavaScript -->
+                        </div>
+                        
+                        <div class="evaluation-buttons">
+                            <button class="eval-btn" onclick="calculateFinalScore()">
+                                <i class="fas fa-calculator"></i> Hitung Nilai Akhir
+                            </button>
+                            <button class="eval-btn" onclick="resetAllEvaluations()">
+                                <i class="fas fa-trash-alt"></i> Reset Semua Evaluasi
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-nav">
+                        <button class="quiz-btn" onclick="goToSlide(25)">
+                            <i class="fas fa-arrow-left"></i> Kembali ke Evaluasi
+                        </button>
+                        <button class="quiz-btn" onclick="goToSlide(27)">
+                            Lanjut ke Penutup <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 27: Daftar Pustaka & Penutup -->
+            <div class="slide" id="slide27">
+                <div class="slide-number">27</div>
+                <div class="slide-content">
+                    <div class="image-container-side slide-in-right">
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" 
+                             alt="Penutup">
+                        <p class="image-caption-side">Terus belajar dan berkembang di era digital</p>
+                    </div>
+                    
+                    <h1 class="slide-title slide-in-right">
+                        <i class="fas fa-book-open"></i><br>
+                        PENUTUP
+                    </h1>
+                    
+                    <div class="material-section">
+                        <h3 class="section-title">Sumber Referensi</h3>
+                        <ul class="compact-list">
+                            <li>Kemendikbudristek RI. (2021). Buku Informatika SMP/MTs.</li>
+                            <li>Kominfo RI. (2020). Modul Literasi Digital: Keamanan dan Etika Bermedia Digital.</li>
+                            <li>Kominfo RI. (2021). Panduan Cakap Bermedia Digital.</li>
+                            <li>UNICEF Indonesia. (2020). Keamanan Digital untuk Anak dan Remaja.</li>
+                            <li>Common Sense Media. (2022). Digital Citizenship Curriculum.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="quote-box">
+                        <p class="quote-text">
+                            "Teknologi hanyalah alat. Yang terpenting adalah bagaimana kita menggunakan alat tersebut untuk kebaikan bersama dan pembangunan karakter."
+                        </p>
+                    </div>
+                    
+                    <div class="fade-in" style="text-align: center; margin-top: 15px;">
+                        <div style="background: var(--gradient); padding: 12px; border-radius: 10px; color: white;">
+                            <h3 style="margin-bottom: 8px;">Disusun Oleh:</h3>
+                            <p style="font-size: 1.1rem; font-weight: bold;">
+                                ROMY S DEDU BATA, S.Pd., M.Pd.
+                            </p>
+                            <p style="margin-top: 6px; font-size: 0.9rem;">
+                                Guru Informatika | Pengembang Buku Ajar
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="nav-buttons">
+            <button class="nav-btn" id="prevBtn" onclick="prevSlide()" disabled>
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="nav-btn" id="nextBtn" onclick="nextSlide()">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Slide Management
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const slidesContainer = document.getElementById('slidesContainer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressBar = document.getElementById('slideProgressBar');
+        const thumbnailList = document.getElementById('thumbnailList');
+        const thumbToggle = document.getElementById('thumbToggle');
+        const thumbOverlay = document.getElementById('thumbOverlay');
+        const thumbnailNav = document.getElementById('thumbnailNav');
+        const closeThumbnail = document.getElementById('closeThumbnail');
+
+        // Data soal evaluasi
+        const evaluationData = {
+            bab1: {
+                multipleChoice: [
+                    {
+                        question: "Apa yang dimaksud dengan jejak digital?",
+                        options: [
+                            "Langkah kaki di dunia nyata",
+                            "Data yang tertinggal dari aktivitas kita di internet",
+                            "Virus komputer",
+                            "Sinyal jaringan internet"
+                        ],
+                        correct: 1
+                    },
+                    {
+                        question: "Manakah yang termasuk jejak digital aktif?",
+                        options: [
+                            "Cookies browser",
+                            "Riwayat pencarian",
+                            "Posting di media sosial",
+                            "Lokasi GPS"
+                        ],
+                        correct: 2
+                    },
+                    {
+                        question: "Apa risiko utama dari jejak digital?",
+                        options: [
+                            "Komputer menjadi lambat",
+                            "Pencurian dan penyalahgunaan data",
+                            "Monitor rusak",
+                            "Keyboard tidak berfungsi"
+                        ],
+                        correct: 1
+                    },
+                    {
+                        question: "Bagaimana cara melindungi jejak digital?",
+                        options: [
+                            "Selalu online 24 jam",
+                            "Berbagi semua informasi pribadi",
+                            "Hapus akun media sosial yang tidak digunakan",
+                            "Klik semua tautan yang menarik"
+                        ],
+                        correct: 2
+                    },
+                    {
+                        question: "Apa ciri-ciri media sosial?",
+                        options: [
+                            "Hanya bisa dibaca",
+                            "Tidak interaktif",
+                            "Pengguna bisa membuat konten",
+                            "Hanya untuk orang dewasa"
+                        ],
+                        correct: 2
+                    },
+                    {
+                        question: "Manakah dampak positif media sosial?",
+                        options: [
+                            "Mempermudah komunikasi",
+                            "Menyebabkan kecanduan",
+                            "Menyebarkan hoaks",
+                            "Mengganggu privasi"
+                        ],
+                        correct: 0
+                    },
+                    {
+                        question: "Apa yang dimaksud dengan cyberbullying?",
+                        options: [
+                            "Bermain game online",
+                            "Perundungan di dunia maya",
+                            "Belajar online",
+                            "Berkomunikasi via email"
+                        ],
+                        correct: 1
+                    },
+                    {
+                        question: "Apa yang harus dilakukan jika menjadi korban cyberbullying?",
+                        options: [
+                            "Membalas dengan cara sama",
+                            "Diam saja dan menanggung sendiri",
+                            "Cerita ke guru atau orang tua",
+                            "Menghapus semua akun media sosial"
+                        ],
+                        correct: 2
+                    },
+                    {
+                        question: "Apa yang dimaksud dengan netiket?",
+                        options: [
+                            "Jaringan internet cepat",
+                            "Aturan sopan santun di internet",
+                            "Jenis media sosial baru",
+                            "Aplikasi edit foto"
+                        ],
+                        correct: 1
+                    },
+                    {
+                        question: "Bagaimana cara mengenali berita bohong (hoaks)?",
+                        options: [
+                            "Percaya semua informasi",
+                            "Cek sumber dan verifikasi kebenaran",
+                            "Segera sebarkan ke semua orang",
+                            "Hanya baca judulnya saja"
+                        ],
+                        correct: 1
+                    }
+                ],
+                fillInTheBlank: [
+                    {
+                        question: "Data yang tertinggal setelah menggunakan internet disebut __________ digital.",
+                        answer: "jejak",
+                        hint: "J _ _ _ k"
+                    },
+                    {
+                        question: "Media sosial adalah bagian dari Web __________.",
+                        answer: "2.0",
+                        hint: "Angka 2 diikuti titik nol"
+                    },
+                    {
+                        question: "Perundungan di dunia maya disebut __________.",
+                        answer: "cyberbullying",
+                        hint: "c _ _ _ _ _ b _ _ _ _ _ _ g"
+                    },
+                    {
+                        question: "Aturan sopan santun di internet disebut __________.",
+                        answer: "netiket",
+                        hint: "n _ _ _ k _ t"
+                    },
+                    {
+                        question: "Informasi palsu yang disebarkan di internet disebut __________.",
+                        answer: "hoaks",
+                        hint: "h _ _ _ s"
+                    }
+                ]
+            },
+            bab2: {
+                multipleChoice: [
+                    {
+                        question: "Bagian komputer yang berfungsi sebagai 'otak' adalah...",
+                        options: [
+                            "Monitor",
+                            "Keyboard",
+                            "CPU",
+                            "Printer"
+                        ],
+                        correct: 2
+                    },
+                    {
+                        question: "Contoh perangkat keras (hardware) adalah...",
+                        options: [
+                            "Microsoft Word",
+                            "Windows",
+                            "Mouse",
+                            "Google Chrome"
+                        ],
+                        correct: 2
+                    },
+                    {
+                        question: "Fungsi utama memori pada komputer adalah...",
+                        options: [
+                            "Menampilkan gambar",
+                            "Menyimpan dan memproses data sementara",
+                            "Menghubungkan komputer ke internet",
+                            "Mencetak dokumen"
+                        ],
+                        correct: 1
+                    },
+                    {
+                        question: "Sistem bilangan yang digunakan dalam pengalamatan memori adalah...",
+                        options: [
+                            "Desimal",
+                            "Biner",
+                            "Oktal",
+                            "Heksadesimal"
+                        ],
+                        correct: 3
+                    },
+                    {
+                        question: "Jaringan komputer yang mencakup area luas seperti internet disebut...",
+                        options: [
+                            "LAN",
+                            "MAN",
+                            "WAN",
+                            "PAN"
+                        ],
+                        correct: 2
+                    },
+                    {
+                        question: "Alat yang menghubungkan komputer ke internet adalah...",
+                        options: [
+                            "CPU",
+                            "RAM",
+                            "Modem",
+                            "Harddisk"
+                        ],
+                        correct: 2
+                    },
+                    {
+                        question: "Aplikasi yang tepat untuk membuat dokumen teks adalah...",
+                        options: [
+                            "Excel",
+                            "PowerPoint",
+                            "Word",
+                            "Photoshop"
+                        ],
+                        correct: 2
+                    },
+                    {
+                        question: "Cara aman menggunakan internet adalah...",
+                        options: [
+                            "Membagikan password ke teman",
+                            "Menggunakan WiFi sembarangan",
+                            "Mengatur keamanan browser",
+                            "Mengklik semua tautan"
+                        ],
+                        correct: 2
+                    },
+                    {
+                        question: "Bagian CPU yang bertugas menghitung operasi matematika adalah...",
+                        options: [
+                            "Control Unit",
+                            "ALU",
+                            "Register",
+                            "Cache"
+                        ],
+                        correct: 1
+                    },
+                    {
+                        question: "Komunikasi data pada ponsel dipengaruhi oleh...",
+                        options: [
+                            "Warna ponsel",
+                            "Kekuatan sinyal",
+                            "Merk ponsel",
+                            "Ukuran layar"
+                        ],
+                        correct: 1
+                    }
+                ],
+                fillInTheBlank: [
+                    {
+                        question: "CPU adalah singkatan dari Central __________ Unit.",
+                        answer: "Processing",
+                        hint: "P _ _ _ _ s _ _ _ g"
+                    },
+                    {
+                        question: "Dua komponen utama sistem komputer adalah hardware dan __________.",
+                        answer: "software",
+                        hint: "s _ _ _ w _ _ e"
+                    },
+                    {
+                        question: "Jaringan komputer yang mencakup area lokal disebut __________.",
+                        answer: "LAN",
+                        hint: "L _ N"
+                    },
+                    {
+                        question: "Aplikasi pengolah angka seperti Microsoft __________.",
+                        answer: "Excel",
+                        hint: "E _ _ e l"
+                    },
+                    {
+                        question: "Password yang aman minimal terdiri dari __________ karakter.",
+                        answer: "8",
+                        hint: "Angka delapan"
+                    }
+                ]
+            }
+        };
+
+        // State untuk menyimpan jawaban
+        let userAnswers = {
+            bab1: {
+                mc: Array(10).fill(null),
+                fill: Array(5).fill('')
+            },
+            bab2: {
+                mc: Array(10).fill(null),
+                fill: Array(5).fill('')
+            }
+        };
+
+        // Initialize slides
+        function initSlides() {
+            // Set initial slide
+            goToSlide(0);
+            
+            // Create thumbnail list
+            createThumbnailList();
+            
+            // Add keyboard navigation
+            document.addEventListener('keydown', handleKeyPress);
+            
+            // Add swipe support for mobile
+            setupSwipe();
+            
+            // Update progress bar
+            updateProgressBar();
+            
+            // Initialize evaluation questions
+            initializeEvaluations();
+            
+            // Setup gambar dengan sistem fallback
+            setupImagesWithFallback();
+        }
+
+        // Create thumbnail navigation
+        function createThumbnailList() {
+            const slideTitles = [
+                "Cover - Buku Ajar Informatika",
+                "Daftar Isi Lengkap",
+                "Bab 1: Jejak Digital",
+                "Melindungi Jejak Digital",
+                "Media Sosial",
+                "Dampak Media Sosial",
+                "Mengkaji Informasi",
+                "Etika Bermedia Digital",
+                "Berinteraksi dengan Bijak",
+                "Cyberbullying",
+                "Dampak Cyberbullying",
+                "Penanganan Cyberbullying",
+                "Evaluasi Bab 1: Pilihan Ganda",
+                "Evaluasi Bab 1: Soal Isian",
+                "Bab 2: Pendahuluan",
+                "Komponen Sistem Komputer",
+                "Pengalamatan Memori",
+                "Central Processing Unit",
+                "Jaringan Komputer",
+                "Komunikasi Data pada Ponsel",
+                "Terhubung ke Internet dengan Aman",
+                "Perangkat Lunak Aplikasi",
+                "Merangkum Narasi Digital",
+                "Evaluasi Bab 2: Pilihan Ganda",
+                "Evaluasi Bab 2: Soal Isian",
+                "Hasil Evaluasi",
+                "Penutup"
+            ];
+
+            thumbnailList.innerHTML = '';
+            slideTitles.forEach((title, index) => {
+                const li = document.createElement('li');
+                li.className = 'thumbnail-item';
+                li.textContent = `${index + 1}. ${title}`;
+                li.addEventListener('click', () => {
+                    goToSlide(index);
+                    closeThumbnailNav();
+                });
+                thumbnailList.appendChild(li);
+            });
+        }
+
+        // Initialize evaluation questions
+        function initializeEvaluations() {
+            // Bab 1 - Pilihan Ganda
+            const bab1MCContainer = document.getElementById('bab1-mc-questions');
+            bab1MCContainer.innerHTML = '';
+            
+            evaluationData.bab1.multipleChoice.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `
+                    <div class="question-number">
+                        <i class="fas fa-question-circle"></i>
+                        Soal ${index + 1}
+                    </div>
+                    <p><strong>${q.question}</strong></p>
+                    <div class="options">
+                        ${q.options.map((option, optIndex) => `
+                            <div class="option" onclick="selectBab1MCOption(${index}, ${optIndex})" id="bab1-mc-${index}-${optIndex}">
+                                <input type="radio" name="bab1-mc-${index}" id="bab1-mc-${index}-radio-${optIndex}">
+                                <label for="bab1-mc-${index}-radio-${optIndex}">${option}</label>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                bab1MCContainer.appendChild(questionDiv);
+            });
+
+            // Bab 1 - Isian
+            const bab1FillContainer = document.getElementById('bab1-fill-questions');
+            bab1FillContainer.innerHTML = '';
+            
+            evaluationData.bab1.fillInTheBlank.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `
+                    <div class="question-number">
+                        <i class="fas fa-keyboard"></i>
+                        Soal ${index + 1}
+                    </div>
+                    <p><strong>${q.question}</strong></p>
+                    <p><small>Petunjuk: ${q.hint}</small></p>
+                    <input type="text" class="fill-in-input" id="bab1-fill-${index}" 
+                           placeholder="Tulis jawabanmu di sini..." 
+                           oninput="updateBab1FillAnswer(${index}, this.value)">
+                `;
+                bab1FillContainer.appendChild(questionDiv);
+            });
+
+            // Bab 2 - Pilihan Ganda
+            const bab2MCContainer = document.getElementById('bab2-mc-questions');
+            bab2MCContainer.innerHTML = '';
+            
+            evaluationData.bab2.multipleChoice.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `
+                    <div class="question-number">
+                        <i class="fas fa-question-circle"></i>
+                        Soal ${index + 1}
+                    </div>
+                    <p><strong>${q.question}</strong></p>
+                    <div class="options">
+                        ${q.options.map((option, optIndex) => `
+                            <div class="option" onclick="selectBab2MCOption(${index}, ${optIndex})" id="bab2-mc-${index}-${optIndex}">
+                                <input type="radio" name="bab2-mc-${index}" id="bab2-mc-${index}-radio-${optIndex}">
+                                <label for="bab2-mc-${index}-radio-${optIndex}">${option}</label>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                bab2MCContainer.appendChild(questionDiv);
+            });
+
+            // Bab 2 - Isian
+            const bab2FillContainer = document.getElementById('bab2-fill-questions');
+            bab2FillContainer.innerHTML = '';
+            
+            evaluationData.bab2.fillInTheBlank.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                questionDiv.innerHTML = `
+                    <div class="question-number">
+                        <i class="fas fa-keyboard"></i>
+                        Soal ${index + 1}
+                    </div>
+                    <p><strong>${q.question}</strong></p>
+                    <p><small>Petunjuk: ${q.hint}</small></p>
+                    <input type="text" class="fill-in-input" id="bab2-fill-${index}" 
+                           placeholder="Tulis jawabanmu di sini..." 
+                           oninput="updateBab2FillAnswer(${index}, this.value)">
+                `;
+                bab2FillContainer.appendChild(questionDiv);
+            });
+        }
+
+        // Setup gambar dengan sistem fallback
+        function setupImagesWithFallback() {
+            const images = document.querySelectorAll('.slide img');
+            
+            images.forEach(img => {
+                // Tambahkan loading lazy untuk performa
+                img.setAttribute('loading', 'lazy');
+                
+                // Tambahkan error handler
+                img.onerror = function() {
+                    console.log('Gambar gagal dimuat:', this.src);
+                    
+                    // Buat SVG placeholder sebagai fallback
+                    const placeholderSVG = `data:image/svg+xml;charset=UTF-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"%3E%3Crect width="600" height="400" fill="%232e7d32"/%3E%3Ctext x="300" y="200" font-family="Arial" font-size="20" fill="white" text-anchor="middle"%3EGambar tidak tersedia%3C/text%3E%3C/svg%3E`;
+                    
+                    this.src = placeholderSVG;
+                    this.alt = 'Gambar tidak tersedia - placeholder';
+                };
+            });
+        }
+
+        // Navigate to specific slide
+        function goToSlide(slideIndex) {
+            if (slideIndex < 0 || slideIndex >= totalSlides) return;
+            
+            currentSlide = slideIndex;
+            slidesContainer.style.transform = `translateX(-${currentSlide * 100}vw)`;
+            
+            // Update button states
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+            
+            // Update active thumbnail
+            updateActiveThumbnail();
+            
+            // Update progress bar
+            updateProgressBar();
+            
+            // Trigger animations for current slide
+            triggerSlideAnimations();
+        }
+
+        // Next slide
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                goToSlide(currentSlide + 1);
+            }
+        }
+
+        // Previous slide
+        function prevSlide() {
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            }
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // Update active thumbnail
+        function updateActiveThumbnail() {
+            const thumbnails = thumbnailList.querySelectorAll('.thumbnail-item');
+            thumbnails.forEach((thumb, index) => {
+                thumb.classList.remove('active');
+                if (index === currentSlide) {
+                    thumb.classList.add('active');
+                    // Scroll to active thumbnail
+                    thumb.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        }
+
+        // Trigger animations for current slide
+        function triggerSlideAnimations() {
+            const slide = slides[currentSlide];
+            const animElements = slide.querySelectorAll('.fade-in, .slide-in-right, .slide-in-left, .scale-up');
+            
+            // Reset animations
+            animElements.forEach(el => {
+                el.style.animation = 'none';
+                el.offsetHeight; // Trigger reflow
+                el.style.animation = null;
+            });
+        }
+
+        // Keyboard navigation
+        function handleKeyPress(e) {
+            switch(e.key) {
+                case 'ArrowRight':
+                case ' ':
+                case 'PageDown':
+                    nextSlide();
+                    break;
+                case 'ArrowLeft':
+                case 'PageUp':
+                    prevSlide();
+                    break;
+                case 'Home':
+                    goToSlide(0);
+                    break;
+                case 'End':
+                    goToSlide(totalSlides - 1);
+                    break;
+                case 'f':
+                case 'F':
+                    if (e.ctrlKey) {
+                        toggleFullscreen();
+                    }
+                    break;
+            }
+        }
+
+        // Swipe support for mobile
+        function setupSwipe() {
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            document.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+            
+            document.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+            
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+                
+                if (Math.abs(diff) > swipeThreshold) {
+                    if (diff > 0) {
+                        // Swipe left - next slide
+                        nextSlide();
+                    } else {
+                        // Swipe right - previous slide
+                        prevSlide();
+                    }
+                }
+            }
+        }
+
+        // Fullscreen toggle
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // Thumbnail navigation toggle
+        function toggleThumbnailNav() {
+            thumbnailNav.classList.toggle('active');
+            thumbOverlay.classList.toggle('active');
+        }
+
+        function closeThumbnailNav() {
+            thumbnailNav.classList.remove('active');
+            thumbOverlay.classList.remove('active');
+        }
+
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const icon = themeToggle.querySelector('i');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+
+        // Event Listeners
+        thumbToggle.addEventListener('click', toggleThumbnailNav);
+        thumbOverlay.addEventListener('click', closeThumbnailNav);
+        closeThumbnail.addEventListener('click', closeThumbnailNav);
+
+        // Initialize on load
+        window.addEventListener('load', initSlides);
+
+        // Print styles
+        window.addEventListener('beforeprint', () => {
+            // Add page breaks for printing
+            slides.forEach((slide, index) => {
+                if (index < totalSlides - 1) {
+                    slide.style.pageBreakAfter = 'always';
+                }
+            });
+        });
+
+        // Share presentation
+        function sharePresentation() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Slide Presentasi Informatika Kelas VII',
+                    text: 'Temukan slide presentasi interaktif untuk pembelajaran Informatika',
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link presentasi telah disalin ke clipboard!');
+            }
+        }
+
+        // Fungsi untuk evaluasi Bab 1
+        function selectBab1MCOption(questionIndex, optionIndex) {
+            // Reset selected class untuk semua opsi di soal ini
+            for (let i = 0; i < 4; i++) {
+                const optionElement = document.getElementById(`bab1-mc-${questionIndex}-${i}`);
+                optionElement.classList.remove('selected');
+            }
+            
+            // Tambah selected class ke opsi yang dipilih
+            const selectedOption = document.getElementById(`bab1-mc-${questionIndex}-${optionIndex}`);
+            selectedOption.classList.add('selected');
+            
+            // Simpan jawaban user
+            userAnswers.bab1.mc[questionIndex] = optionIndex;
+        }
+
+        function updateBab1FillAnswer(questionIndex, value) {
+            userAnswers.bab1.fill[questionIndex] = value.trim().toLowerCase();
+        }
+
+        function checkBab1MCAnswers() {
+            let correctCount = 0;
+            const resultsContainer = document.getElementById('bab1-mc-results');
+            
+            // Reset semua warna opsi
+            evaluationData.bab1.multipleChoice.forEach((q, qIndex) => {
+                for (let i = 0; i < 4; i++) {
+                    const optionElement = document.getElementById(`bab1-mc-${qIndex}-${i}`);
+                    optionElement.classList.remove('correct', 'incorrect', 'selected');
+                    
+                    if (i === q.correct) {
+                        optionElement.classList.add('correct');
+                    } else if (userAnswers.bab1.mc[qIndex] === i) {
+                        optionElement.classList.add('incorrect');
+                    }
+                }
+                
+                // Hitung jawaban benar
+                if (userAnswers.bab1.mc[qIndex] === q.correct) {
+                    correctCount++;
+                }
+            });
+            
+            const score = (correctCount / 10) * 100;
+            const scoreElement = document.getElementById('bab1-score');
+            scoreElement.textContent = `${score}%`;
+            
+            // Tampilkan hasil
+            resultsContainer.innerHTML = `
+                <div class="results-container">
+                    <h3><i class="fas fa-chart-bar"></i> Hasil Pilihan Ganda Bab 1</h3>
+                    <div class="score-display">
+                        <div class="score-circle">${score}%</div>
+                    </div>
+                    <div class="feedback ${score >= 80 ? 'excellent' : score >= 60 ? 'good' : 'needs-improvement'}">
+                        <p>
+                            ${score >= 80 ? '🎉 Excellent! Kamu menguasai materi Bab 1 dengan sangat baik!' : 
+                              score >= 60 ? '👍 Bagus! Kamu sudah memahami sebagian besar materi.' : 
+                              '📚 Perlu belajar lagi. Coba ulangi materi Bab 1.'}
+                        </p>
+                        <p><strong>${correctCount} dari 10 soal benar</strong></p>
+                    </div>
+                </div>
+            `;
+            resultsContainer.style.display = 'block';
+        }
+
+        function checkBab1FillAnswers() {
+            let correctCount = 0;
+            const resultsContainer = document.getElementById('bab1-fill-results');
+            
+            // Periksa jawaban dan update tampilan
+            evaluationData.bab1.fillInTheBlank.forEach((q, qIndex) => {
+                const inputElement = document.getElementById(`bab1-fill-${qIndex}`);
+                const userAnswer = userAnswers.bab1.fill[qIndex] || '';
+                
+                if (userAnswer === q.answer.toLowerCase()) {
+                    correctCount++;
+                    inputElement.classList.remove('incorrect');
+                    inputElement.classList.add('correct');
+                } else {
+                    inputElement.classList.remove('correct');
+                    inputElement.classList.add('incorrect');
+                }
+            });
+            
+            const score = (correctCount / 5) * 100;
+            
+            // Tampilkan hasil
+            resultsContainer.innerHTML = `
+                <div class="results-container">
+                    <h3><i class="fas fa-chart-bar"></i> Hasil Soal Isian Bab 1</h3>
+                    <div class="score-display">
+                        <div class="score-circle">${score}%</div>
+                    </div>
+                    <div class="feedback ${score >= 80 ? 'excellent' : score >= 60 ? 'good' : 'needs-improvement'}">
+                        <p>
+                            ${score >= 80 ? '🎉 Excellent! Jawaban isianmu sangat tepat!' : 
+                              score >= 60 ? '👍 Bagus! Kamu sudah memahami konsepnya.' : 
+                              '📚 Perlu belajar lagi. Perhatikan materi dengan lebih seksama.'}
+                        </p>
+                        <p><strong>${correctCount} dari 5 soal benar</strong></p>
+                    </div>
+                </div>
+            `;
+            resultsContainer.style.display = 'block';
+        }
+
+        function resetBab1MCAnswers() {
+            userAnswers.bab1.mc = Array(10).fill(null);
+            
+            // Reset tampilan
+            evaluationData.bab1.multipleChoice.forEach((q, qIndex) => {
+                for (let i = 0; i < 4; i++) {
+                    const optionElement = document.getElementById(`bab1-mc-${qIndex}-${i}`);
+                    optionElement.classList.remove('selected', 'correct', 'incorrect');
+                }
+            });
+            
+            const resultsContainer = document.getElementById('bab1-mc-results');
+            resultsContainer.style.display = 'none';
+        }
+
+        function resetBab1FillAnswers() {
+            userAnswers.bab1.fill = Array(5).fill('');
+            
+            // Reset tampilan
+            evaluationData.bab1.fillInTheBlank.forEach((q, qIndex) => {
+                const inputElement = document.getElementById(`bab1-fill-${qIndex}`);
+                inputElement.value = '';
+                inputElement.classList.remove('correct', 'incorrect');
+            });
+            
+            const resultsContainer = document.getElementById('bab1-fill-results');
+            resultsContainer.style.display = 'none';
+        }
+
+        // Fungsi untuk evaluasi Bab 2
+        function selectBab2MCOption(questionIndex, optionIndex) {
+            // Reset selected class untuk semua opsi di soal ini
+            for (let i = 0; i < 4; i++) {
+                const optionElement = document.getElementById(`bab2-mc-${questionIndex}-${i}`);
+                optionElement.classList.remove('selected');
+            }
+            
+            // Tambah selected class ke opsi yang dipilih
+            const selectedOption = document.getElementById(`bab2-mc-${questionIndex}-${optionIndex}`);
+            selectedOption.classList.add('selected');
+            
+            // Simpan jawaban user
+            userAnswers.bab2.mc[questionIndex] = optionIndex;
+        }
+
+        function updateBab2FillAnswer(questionIndex, value) {
+            userAnswers.bab2.fill[questionIndex] = value.trim().toLowerCase();
+        }
+
+        function checkBab2MCAnswers() {
+            let correctCount = 0;
+            const resultsContainer = document.getElementById('bab2-mc-results');
+            
+            // Reset semua warna opsi
+            evaluationData.bab2.multipleChoice.forEach((q, qIndex) => {
+                for (let i = 0; i < 4; i++) {
+                    const optionElement = document.getElementById(`bab2-mc-${qIndex}-${i}`);
+                    optionElement.classList.remove('correct', 'incorrect', 'selected');
+                    
+                    if (i === q.correct) {
+                        optionElement.classList.add('correct');
+                    } else if (userAnswers.bab2.mc[qIndex] === i) {
+                        optionElement.classList.add('incorrect');
+                    }
+                }
+                
+                // Hitung jawaban benar
+                if (userAnswers.bab2.mc[qIndex] === q.correct) {
+                    correctCount++;
+                }
+            });
+            
+            const score = (correctCount / 10) * 100;
+            const scoreElement = document.getElementById('bab2-score');
+            scoreElement.textContent = `${score}%`;
+            
+            // Tampilkan hasil
+            resultsContainer.innerHTML = `
+                <div class="results-container">
+                    <h3><i class="fas fa-chart-bar"></i> Hasil Pilihan Ganda Bab 2</h3>
+                    <div class="score-display">
+                        <div class="score-circle">${score}%</div>
+                    </div>
+                    <div class="feedback ${score >= 80 ? 'excellent' : score >= 60 ? 'good' : 'needs-improvement'}">
+                        <p>
+                            ${score >= 80 ? '🎉 Excellent! Kamu menguasai materi Bab 2 dengan sangat baik!' : 
+                              score >= 60 ? '👍 Bagus! Kamu sudah memahami sebagian besar materi.' : 
+                              '📚 Perlu belajar lagi. Coba ulangi materi Bab 2.'}
+                        </p>
+                        <p><strong>${correctCount} dari 10 soal benar</strong></p>
+                    </div>
+                </div>
+            `;
+            resultsContainer.style.display = 'block';
+        }
+
+        function checkBab2FillAnswers() {
+            let correctCount = 0;
+            const resultsContainer = document.getElementById('bab2-fill-results');
+            
+            // Periksa jawaban dan update tampilan
+            evaluationData.bab2.fillInTheBlank.forEach((q, qIndex) => {
+                const inputElement = document.getElementById(`bab2-fill-${qIndex}`);
+                const userAnswer = userAnswers.bab2.fill[qIndex] || '';
+                
+                if (userAnswer === q.answer.toLowerCase()) {
+                    correctCount++;
+                    inputElement.classList.remove('incorrect');
+                    inputElement.classList.add('correct');
+                } else {
+                    inputElement.classList.remove('correct');
+                    inputElement.classList.add('incorrect');
+                }
+            });
+            
+            const score = (correctCount / 5) * 100;
+            
+            // Tampilkan hasil
+            resultsContainer.innerHTML = `
+                <div class="results-container">
+                    <h3><i class="fas fa-chart-bar"></i> Hasil Soal Isian Bab 2</h3>
+                    <div class="score-display">
+                        <div class="score-circle">${score}%</div>
+                    </div>
+                    <div class="feedback ${score >= 80 ? 'excellent' : score >= 60 ? 'good' : 'needs-improvement'}">
+                        <p>
+                            ${score >= 80 ? '🎉 Excellent! Jawaban isianmu sangat tepat!' : 
+                              score >= 60 ? '👍 Bagus! Kamu sudah memahami konsepnya.' : 
+                              '📚 Perlu belajar lagi. Perhatikan materi dengan lebih seksama.'}
+                        </p>
+                        <p><strong>${correctCount} dari 5 soal benar</strong></p>
+                    </div>
+                </div>
+            `;
+            resultsContainer.style.display = 'block';
+        }
+
+        function resetBab2MCAnswers() {
+            userAnswers.bab2.mc = Array(10).fill(null);
+            
+            // Reset tampilan
+            evaluationData.bab2.multipleChoice.forEach((q, qIndex) => {
+                for (let i = 0; i < 4; i++) {
+                    const optionElement = document.getElementById(`bab2-mc-${qIndex}-${i}`);
+                    optionElement.classList.remove('selected', 'correct', 'incorrect');
+                }
+            });
+            
+            const resultsContainer = document.getElementById('bab2-mc-results');
+            resultsContainer.style.display = 'none';
+        }
+
+        function resetBab2FillAnswers() {
+            userAnswers.bab2.fill = Array(5).fill('');
+            
+            // Reset tampilan
+            evaluationData.bab2.fillInTheBlank.forEach((q, qIndex) => {
+                const inputElement = document.getElementById(`bab2-fill-${qIndex}`);
+                inputElement.value = '';
+                inputElement.classList.remove('correct', 'incorrect');
+            });
+            
+            const resultsContainer = document.getElementById('bab2-fill-results');
+            resultsContainer.style.display = 'none';
+        }
+
+        // Fungsi untuk menghitung nilai akhir
+        function calculateFinalScore() {
+            // Hitung skor Bab 1
+            let bab1MCCorrect = 0;
+            let bab1FillCorrect = 0;
+            
+            // Hitung pilihan ganda Bab 1
+            evaluationData.bab1.multipleChoice.forEach((q, index) => {
+                if (userAnswers.bab1.mc[index] === q.correct) {
+                    bab1MCCorrect++;
+                }
+            });
+            
+            // Hitung isian Bab 1
+            evaluationData.bab1.fillInTheBlank.forEach((q, index) => {
+                if (userAnswers.bab1.fill[index] === q.answer.toLowerCase()) {
+                    bab1FillCorrect++;
+                }
+            });
+            
+            // Hitung skor Bab 2
+            let bab2MCCorrect = 0;
+            let bab2FillCorrect = 0;
+            
+            // Hitung pilihan ganda Bab 2
+            evaluationData.bab2.multipleChoice.forEach((q, index) => {
+                if (userAnswers.bab2.mc[index] === q.correct) {
+                    bab2MCCorrect++;
+                }
+            });
+            
+            // Hitung isian Bab 2
+            evaluationData.bab2.fillInTheBlank.forEach((q, index) => {
+                if (userAnswers.bab2.fill[index] === q.answer.toLowerCase()) {
+                    bab2FillCorrect++;
+                }
+            });
+            
+            // Hitung persentase
+            const bab1MCScore = (bab1MCCorrect / 10) * 100;
+            const bab1FillScore = (bab1FillCorrect / 5) * 100;
+            const bab1TotalScore = (bab1MCScore * 0.7) + (bab1FillScore * 0.3);
+            
+            const bab2MCScore = (bab2MCCorrect / 10) * 100;
+            const bab2FillScore = (bab2FillCorrect / 5) * 100;
+            const bab2TotalScore = (bab2MCScore * 0.7) + (bab2FillScore * 0.3);
+            
+            const finalScore = (bab1TotalScore + bab2TotalScore) / 2;
+            
+            // Update tampilan
+            document.getElementById('bab1-score').textContent = `${Math.round(bab1TotalScore)}%`;
+            document.getElementById('bab2-score').textContent = `${Math.round(bab2TotalScore)}%`;
+            document.getElementById('total-score').textContent = `${Math.round(finalScore)}%`;
+            
+            // Berikan feedback
+            const feedbackContainer = document.getElementById('final-feedback');
+            let feedbackText = '';
+            let feedbackClass = '';
+            
+            if (finalScore >= 85) {
+                feedbackText = `🎉 LUAR BIASA! Nilai akhir kamu ${Math.round(finalScore)}%. Kamu telah menguasai materi Informatika Kelas VII dengan sangat baik!`;
+                feedbackClass = 'excellent';
+            } else if (finalScore >= 70) {
+                feedbackText = `👍 BAGUS! Nilai akhir kamu ${Math.round(finalScore)}%. Kamu sudah memahami sebagian besar materi dengan baik.`;
+                feedbackClass = 'good';
+            } else if (finalScore >= 60) {
+                feedbackText = `👌 CUKUP. Nilai akhir kamu ${Math.round(finalScore)}%. Beberapa materi masih perlu dipelajari lagi.`;
+                feedbackClass = 'good';
+            } else {
+                feedbackText = `📚 PERLU BELAJAR LAGI. Nilai akhir kamu ${Math.round(finalScore)}%. Disarankan untuk mengulang materi Bab 1 dan Bab 2.`;
+                feedbackClass = 'needs-improvement';
+            }
+            
+            feedbackContainer.innerHTML = `
+                <div class="feedback ${feedbackClass}">
+                    <h4><i class="fas fa-award"></i> Feedback Akhir</h4>
+                    <p>${feedbackText}</p>
+                    <p><strong>Detail Skor:</strong></p>
+                    <ul>
+                        <li>Bab 1: ${Math.round(bab1TotalScore)}% (${bab1MCCorrect}/10 PG, ${bab1FillCorrect}/5 Isian)</li>
+                        <li>Bab 2: ${Math.round(bab2TotalScore)}% (${bab2MCCorrect}/10 PG, ${bab2FillCorrect}/5 Isian)</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        function resetAllEvaluations() {
+            // Reset Bab 1
+            resetBab1MCAnswers();
+            resetBab1FillAnswers();
+            
+            // Reset Bab 2
+            resetBab2MCAnswers();
+            resetBab2FillAnswers();
+            
+            // Reset tampilan hasil
+            document.getElementById('bab1-score').textContent = '0%';
+            document.getElementById('bab2-score').textContent = '0%';
+            document.getElementById('total-score').textContent = '0%';
+            
+            const feedbackContainer = document.getElementById('final-feedback');
+            feedbackContainer.innerHTML = '';
+        }
+
+        // Adjust slide content on resize
+        window.addEventListener('resize', function() {
+            // Trigger reflow for animations
+            triggerSlideAnimations();
+        });
+
+        // Add share button to toolbar
+        const shareBtn = document.createElement('button');
+        shareBtn.className = 'toolbar-btn';
+        shareBtn.innerHTML = '<i class="fas fa-share-alt"></i>';
+        shareBtn.title = 'Bagikan Presentasi';
+        shareBtn.onclick = sharePresentation;
+        document.querySelector('.toolbar').appendChild(shareBtn);
+    </script>
+</body>
+</html>
